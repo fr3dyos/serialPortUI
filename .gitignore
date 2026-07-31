@@ -46,6 +46,9 @@ venv-win/
 .history
 serial_history.json
 
+# Local testing tool (not part of the shipped product)
+vserial/
+
 # OS
 .DS_Store
 Thumbs.db
