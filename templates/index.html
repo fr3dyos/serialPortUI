@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>serialPortUI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>serialPortUI</h1>
+    <div class="status-pill" id="statusPill">disconnected</div>
+  </header>
+
+  <main>
+    <!-- Connection panel -->
+    <section class="card">
+      <h2>Connection</h2>
+
+      <label for="portSelect">Device</label>
+      <div class="row">
+        <select id="portSelect"></select>
+        <button id="refreshBtn" title="Refresh device list">&#x21bb;</button>
+      </div>
+
+      <label for="baudInput">Baud rate</label>
+      <input id="baudInput" type="number" value="9600" min="1" />
+
+      <div class="actions">
+        <button id="connectBtn" class="primary">Connect</button>
+        <button id="disconnectBtn" class="danger" disabled>Disconnect</button>
+      </div>
+
+      <p class="hint">
+        Last polled: <span id="lastPoll">never</span>
+        &middot; <span id="portCount">0</span> device(s) detected
+      </p>
+    </section>
+
+    <!-- Send panel -->
+    <section class="card">
+      <h2>Send</h2>
+
+      <label for="sendInput">Message</label>
+      <textarea id="sendInput" rows="3"
+                placeholder="Type a message..."></textarea>
+
+      <div class="row">
+        <label class="inline">
+          <input type="radio" name="encoding" value="ascii" checked /> ASCII
+        </label>
+        <label class="inline">
+          <input type="radio" name="encoding" value="hex" /> Hex (e.g. AA 01 FF)
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="sendBtn" class="primary" disabled>Send</button>
+        <span id="sendFeedback" class="hint"></span>
+      </div>
+    </section>
+
+    <!-- Activity panel -->
+    <section class="card span-2">
+      <div class="card-header">
+        <h2>Activity
+          <span id="activeDeviceLabel" class="hint">(no device)</span>
+        </h2>
+        <div class="actions">
+          <label class="inline">
+            <input type="checkbox" id="showRx" checked /> RX
+          </label>
+          <label class="inline">
+            <input type="checkbox" id="showTx" checked /> TX
+          </label>
+          <button id="loadHistoryBtn">Reload history</button>
+          <button id="clearHistoryBtn" class="danger">Clear history</button>
+        </div>
+      </div>
+
+      <div id="activity" class="activity"></div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
