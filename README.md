@@ -173,6 +173,13 @@ include spaces, commas, and `0x` prefixes.
 
 ---
 
+## Author
+
+**Eng. Fredy Osorio** — [ing.fredyosorio@gmail.com](mailto:ing.fredyosorio@gmail.com)
+Rio de Janeiro - Brazil, August 2026.
+
+---
+
 ## License
 
 MIT — do whatever you'd like, attribution appreciated but not required.
