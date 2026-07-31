@@ -139,6 +139,10 @@ async function connect() {
     setStatus("select a device");
     return;
   }
+  if (!Number.isFinite(baud) || baud <= 0) {
+    setStatus("invalid baud rate", "error");
+    return;
+  }
   const res = await fetch("/api/connect", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

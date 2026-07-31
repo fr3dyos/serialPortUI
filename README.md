@@ -99,8 +99,9 @@ Open your browser at **http://127.0.0.1:5000** and you should see the UI.
 1. **Pick a device** from the drop-down. The list auto-updates every
    two seconds; if you don't see your device, try the round-arrow button to
    refresh manually.
-2. **Set the baud rate** (defaults to `9600`). Common values are `9600`,
-   `19200`, `38400`, `57600`, `115200`, `230400`, `460800`, `921600`.
+2. **Set the baud rate** from the drop-down (defaults to `9600`). The
+   common values are pre-listed: `1200`, `2400`, `4800`, `9600`, `19200`,
+   `38400`, `57600`, `115200`, `230400`, `460800`, `921600`.
 3. Click **Connect**. The status pill at the top changes to a green
    `connected to <device>`.
 4. **Send messages** in the Send panel. Pick ASCII or Hex, type, press
