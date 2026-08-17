@@ -349,6 +349,14 @@ async function send() {
       fb.className = "send-feedback success";
       fb.textContent = `SENT ${payload.bytes_sent} BYTE(S)`;
       $("sendInput").value = "";
+      // Auto-read: wait 200ms then poll the port for a response
+      setTimeout(async () => {
+        try {
+          await fetch("/api/read?timeout_ms=200");
+        } catch (_) {
+          // Silently ignore read errors; responses arrive via SocketIO anyway
+        }
+      }, 200);
     } else {
       fb.className = "send-feedback error";
       fb.textContent = payload.error || "SEND FAILED";

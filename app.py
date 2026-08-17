@@ -480,6 +480,61 @@ def api_send():
     return jsonify({"ok": True, "bytes_sent": len(data), "device": device})
 
 
+@app.route("/api/read", methods=["GET"])
+def api_read():
+    """Force a read from the open serial connection with a timeout.
+
+    Waits up to `timeout_ms` for bytes to arrive and returns whatever
+    is read. Useful after sending a command when you want to explicitly
+    wait for a response.
+    """
+    with _active_lock:
+        if _active_port is None:
+            return jsonify({"ok": False, "error": "No open connection"}), 400
+        port = _active_port.port
+        device = _active_port.device
+
+    try:
+        timeout_ms = max(50, min(int(request.args.get("timeout_ms", 200)), 5000))
+    except ValueError:
+        timeout_ms = 200
+
+    # Poll the port for up to timeout_ms
+    end_time = time.time() + (timeout_ms / 1000.0)
+    lines = []
+    line_buffer = bytearray()
+
+    while time.time() < end_time:
+        remaining = end_time - time.time()
+        if remaining <= 0:
+            break
+        try:
+            waiting = port.in_waiting
+            chunk = port.read(max(1, waiting) if waiting else 1)
+        except (serial.SerialException, OSError):
+            break
+
+        if not chunk:
+            continue
+
+        complete = _split_lines(line_buffer, chunk)
+        lines.extend(complete)
+
+    # Flush any trailing partial
+    if line_buffer:
+        lines.append(bytes(line_buffer))
+
+    if not lines:
+        return jsonify({"ok": True, "lines": [], "device": device})
+
+    # Store in history and emit via SocketIO
+    _append_history(device, "rx", lines if len(lines) > 1 else lines[0])
+    payload = _make_msg("rx", device, lines if len(lines) > 1 else lines[0])
+    socketio.emit("serial_data", payload)
+
+    return jsonify({"ok": True, "lines": [_decode_for_display(ln) for ln in lines], "device": device})
+
+
 @app.route("/api/connect", methods=["POST"])
 def api_connect():
     """Open the requested serial port at the requested settings."""

@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>serialPortUI · Neo-Brutalist Console</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
   <script src="{{ url_for('static', filename='vendor/socket.io.min.js') }}"></script>
 </head>
+
 <body class="app">
   <!-- Top App Bar -->
   <header class="topbar">
@@ -16,9 +21,7 @@
       <h1 class="brand-title">serialPortUI</h1>
       <nav class="topnav" aria-label="Primary">
         <a class="topnav-link is-active" href="#">Console</a>
-        <a class="topnav-link" href="#">Analytics</a>
-        <a class="topnav-link" href="#">History</a>
-        <a class="topnav-link" href="#">Archive</a>
+        <a class="topnav-link" href="http://fosorio.com">fosorio.com</a>
       </nav>
     </div>
     <div class="topbar-actions">
@@ -59,8 +62,7 @@
 
       <!-- Filter + view toggles -->
       <div class="console-toolbar">
-        <input type="search" id="filterInput" class="brutal-input"
-               placeholder="FILTER ACTIVITY (TEXT OR HEX)…" />
+        <input type="search" id="filterInput" class="brutal-input" placeholder="FILTER ACTIVITY (TEXT OR HEX)…" />
         <div class="console-toggles">
           <label class="inline-toggle">
             <input type="checkbox" id="showRx" checked /> RX
@@ -76,22 +78,18 @@
           </label>
         </div>
       </div>
-
       <!-- Log Output -->
       <div class="console-frame">
         <div class="console-scroll" id="activity" aria-live="polite">
           <div class="empty">No traffic yet. Connect to a device to start streaming.</div>
         </div>
       </div>
-
       <!-- Send Row -->
       <div class="send-row">
-        <div class="send-input-wrap">
-          <span class="material-symbols-outlined send-prompt">keyboard_arrow_right</span>
-          <textarea id="sendInput" rows="1" class="brutal-input send-input" placeholder="TYPE A COMMAND…" spellcheck="false"
-            autocomplete="off" style="margin-left: 1cm;">
-          </textarea>
-          </div>
+        <div class="send-input-wrap" style="position: relative; margin-left: 1cm;">
+          <span class="material-symbols-outlined send-prompt" style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); z-index: 2; pointer-events: none;">keyboard_arrow_right </span>
+          <textarea id="sendInput" rows="1" class="brutal-input send-input" placeholder="TYPE A COMMAND…" spellcheck="false" autocomplete="off" style="padding-left: 38px;"></textarea>
+        </div>
         <div class="send-controls">
           <select id="newlineInput" class="brutal-select" aria-label="Append newline">
             <option value="none">No line ending</option>
@@ -106,7 +104,7 @@
         </div>
         <div class="send-meta">
           <span id="sendFeedback" class="send-feedback" role="status" aria-live="polite"></span>
-          <span class="send-hint">⌘/CTRL + ENTER TO SEND · ASCII/HEX</span>
+          <span class="send-hint">PRESS ENTER TO SEND · ASCII/HEX</span>
         </div>
       </div>
     </section>
@@ -144,7 +142,8 @@
           <label class="config-label" for="portSelect">PORT</label>
           <div class="port-row">
             <select id="portSelect" class="brutal-select" aria-label="Serial device"></select>
-            <button id="refreshBtn" class="icon-btn-brutal" title="Refresh device list" aria-label="Refresh device list">
+            <button id="refreshBtn" class="icon-btn-brutal" title="Refresh device list"
+              aria-label="Refresh device list">
               <span class="material-symbols-outlined">refresh</span>
             </button>
           </div>
@@ -247,4 +246,5 @@
 
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
+
 </html>
