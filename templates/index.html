@@ -69,6 +69,9 @@
             <input type="checkbox" id="showTx" checked /> TX
           </label>
           <label class="inline-toggle">
+            <input type="checkbox" id="showTime" checked /> TIMESTAMPS
+          </label>
+          <label class="inline-toggle">
             <input type="checkbox" id="autoScroll" checked /> AUTO-SCROLL
           </label>
         </div>
@@ -85,10 +88,10 @@
       <div class="send-row">
         <div class="send-input-wrap">
           <span class="material-symbols-outlined send-prompt">keyboard_arrow_right</span>
-          <textarea id="sendInput" rows="1" class="brutal-input send-input"
-                    placeholder="TYPE A COMMAND…"
-                    spellcheck="false" autocomplete="off"></textarea>
-        </div>
+          <textarea id="sendInput" rows="1" class="brutal-input send-input" placeholder="TYPE A COMMAND…" spellcheck="false"
+            autocomplete="off" style="margin-left: 1cm;">
+          </textarea>
+          </div>
         <div class="send-controls">
           <select id="newlineInput" class="brutal-select" aria-label="Append newline">
             <option value="none">No line ending</option>

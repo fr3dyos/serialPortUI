@@ -29,6 +29,7 @@ const state = {
   historyLoadedFor: null,
   filter: "",
   autoScroll: true,
+  showTime: true,
   lastError: null,
 };
 
@@ -114,19 +115,41 @@ function highlight(text, query) {
 
 function formatEntry(msg) {
   const tag = msg.direction === "tx" ? "TX" : "RX";
+  const isGroup = Array.isArray(msg.lines) && msg.lines.length > 0;
   const text = msg.data_text || "";
   const isBinary = text.startsWith("<binary");
   const body = !isBinary && text.length ? text : msg.data_hex;
+
   const dir = document.createElement("div");
-  dir.className = "entry " + msg.direction;
+  dir.className = "entry " + msg.direction + (isGroup ? " group" : "");
   dir.dataset.text = body;
   dir.dataset.hex = msg.data_hex;
+
   const html =
     `<span class="meta">${fmtTime(msg.timestamp)}</span>` +
-    `<span class="tag">${tag}</span>` +
+    `<span class="tag">${tag}${isGroup ? ` · ${msg.lines.length}` : ""}</span>` +
     `<span class="data"></span>`;
   dir.innerHTML = html;
-  dir.querySelector(".data").innerHTML = highlight(body, state.filter);
+
+  const dataEl = dir.querySelector(".data");
+  if (isGroup) {
+    // Multi-line response: render as a preformatted block so internal
+    // newlines survive highlight()/escapeHtml().
+    dataEl.classList.add("group-block");
+    const highlighted = msg.lines
+      .map((ln) => {
+        if (state.filter) {
+          return highlight(ln, state.filter);
+        }
+        return escapeHtml(ln);
+      })
+      .join("<br>");
+    dataEl.innerHTML = highlighted;
+  } else {
+    dataEl.innerHTML = highlight(body, state.filter);
+  }
+
+  if (!state.showTime) dir.classList.add("time-hidden");
   applyFiltersToEntry(dir);
   return dir;
 }
@@ -427,7 +450,7 @@ document.addEventListener("DOMContentLoaded", () => {
   $("exportBtn").addEventListener("click", exportHistory);
 
   $("sendInput").addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+    if (e.key === "Enter") {
       e.preventDefault();
       send();
     }
@@ -437,6 +460,12 @@ document.addEventListener("DOMContentLoaded", () => {
   $("showTx").addEventListener("change", applyAllFilters);
   $("autoScroll").addEventListener("change", (e) => {
     state.autoScroll = e.target.checked;
+  });
+  $("showTime").addEventListener("change", (e) => {
+    state.showTime = e.target.checked;
+    document
+      .querySelectorAll("#activity .entry")
+      .forEach((n) => n.classList.toggle("time-hidden", !state.showTime));
   });
 
   $("filterInput").addEventListener("input", (e) => {

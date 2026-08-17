@@ -342,6 +342,31 @@ body.app {
 }
 .entry.hidden { display: none; }
 
+/* Grouped RX response (one entry per multi-line reply). */
+.entry.group {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  background: var(--success-soft);
+  border-left-color: var(--success);
+}
+.entry.group .tag {
+  width: auto;
+  color: var(--success);
+}
+.entry .data.group-block {
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+  padding: 4px 8px;
+  border: 2px solid var(--border);
+  background: var(--bg);
+}
+
+/* Timestamp toggle hides the [HH:MM:SS.mmm] prefix on every entry. */
+.entry.time-hidden .meta { display: none; }
+.entry.time-hidden { padding-left: 60px; }
+
+
 .empty {
   color: var(--text-faint);
   text-align: center;
