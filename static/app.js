@@ -62,6 +62,11 @@ function setStatus(text, kind = "disconnected") {
   const pill = $("statusPill");
   pill.setAttribute("data-state", kind);
   $("statusText").textContent = text;
+  if (text=="DISCONNECTED"){ 
+    $("connectBtnTxt").textContent = "CONNECT";
+  } else {
+    $("connectBtnTxt").textContent = "CONNECTED";
+  }
 }
 
 function setConnectedUI(on) {
@@ -461,6 +466,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") {
       e.preventDefault();
       send();
+      setTimeout(async () => {
+        try {
+          loadHistory(state.activeDevice);
+        } catch (_) {
+          // Silently ignore read errors; responses arrive via SocketIO anyway
+        }
+      }, 400);
+      
     }
   });
 

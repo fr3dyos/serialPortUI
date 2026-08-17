@@ -105,12 +105,27 @@ body.app {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Theme icon swapping */
-.theme-icon-dark { display: none; }
+/* Default: light theme */
+:root[data-theme="light"] .theme-icon-light {
+    display: inline-block;
+}
+
+
+:root[data-theme="light"] .theme-icon-dark {
+    display: none;
+}
+
+/* Dark theme */
 :root[data-theme="dark"] .theme-icon-light,
-.dark .theme-icon-light { display: none; }
+.dark .theme-icon-light {
+    display: none;
+}
+
 :root[data-theme="dark"] .theme-icon-dark,
-.dark .theme-icon-dark { display: inline-block; }
+.dark .theme-icon-dark {
+    display: inline-block;
+}
+
 
 /* =====================================================================
    Top App Bar
@@ -143,6 +158,12 @@ body.app {
   text-transform: uppercase;
   margin: 0;
   white-space: nowrap;
+}
+
+#iconBrand{
+  font-variation-settings: 'FILL' 1; 
+  font-size:50px;
+  color: var(--success);
 }
 
 .topnav {
@@ -318,6 +339,7 @@ body.app {
   width: 100px;
   flex-shrink: 0;
   font-weight: 600;
+  font-size: 12px;
 }
 .entry .tag {
   width: 48px;
