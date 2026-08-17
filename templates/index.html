@@ -1,99 +1,246 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>serialPortUI</title>
+  <title>serialPortUI · Neo-Brutalist Console</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="{{ url_for('static', filename='vendor/socket.io.min.js') }}"></script>
 </head>
-<body>
-  <header>
-    <h1>serialPortUI</h1>
-    <div class="status-pill" id="statusPill">disconnected</div>
+<body class="app">
+  <!-- Top App Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <h1 class="brand-title">serialPortUI</h1>
+      <nav class="topnav" aria-label="Primary">
+        <a class="topnav-link is-active" href="#">Console</a>
+        <a class="topnav-link" href="#">Analytics</a>
+        <a class="topnav-link" href="#">History</a>
+        <a class="topnav-link" href="#">Archive</a>
+      </nav>
+    </div>
+    <div class="topbar-actions">
+      <button id="themeToggle" class="icon-btn-brutal" title="Toggle theme" aria-label="Toggle theme">
+        <span class="material-symbols-outlined theme-icon-light">dark_mode</span>
+        <span class="material-symbols-outlined theme-icon-dark">light_mode</span>
+      </button>
+      <button id="terminalBtn" class="icon-btn-brutal" title="Terminal" aria-label="Terminal">
+        <span class="material-symbols-outlined">terminal</span>
+      </button>
+      <button id="connectBtn" class="btn-brutal btn-connect" title="Connect to selected device">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">cable</span>
+        <span class="connect-label">Connect</span>
+      </button>
+    </div>
   </header>
 
-  <main>
-    <!-- Connection panel -->
-    <section class="card">
-      <h2>Connection</h2>
-
-      <label for="portSelect">Device</label>
-      <div class="row">
-        <select id="portSelect"></select>
-        <button id="refreshBtn" title="Refresh device list">&#x21bb;</button>
-      </div>
-
-      <label for="baudInput">Baud rate</label>
-      <select id="baudInput">
-        <option value="1200">1200</option>
-        <option value="2400">2400</option>
-        <option value="4800">4800</option>
-        <option value="9600" selected>9600</option>
-        <option value="19200">19200</option>
-        <option value="38400">38400</option>
-        <option value="57600">57600</option>
-        <option value="115200">115200</option>
-        <option value="230400">230400</option>
-        <option value="460800">460800</option>
-        <option value="921600">921600</option>
-      </select>
-
-      <div class="actions">
-        <button id="connectBtn" class="primary">Connect</button>
-        <button id="disconnectBtn" class="danger" disabled>Disconnect</button>
-      </div>
-
-      <p class="hint">
-        Last polled: <span id="lastPoll">never</span>
-        &middot; <span id="portCount">0</span> device(s) detected
-      </p>
-    </section>
-
-    <!-- Send panel -->
-    <section class="card">
-      <h2>Send</h2>
-
-      <label for="sendInput">Message</label>
-      <textarea id="sendInput" rows="3"
-                placeholder="Type a message..."></textarea>
-
-      <div class="row">
-        <label class="inline">
-          <input type="radio" name="encoding" value="ascii" checked /> ASCII
-        </label>
-        <label class="inline">
-          <input type="radio" name="encoding" value="hex" /> Hex (e.g. AA 01 FF)
-        </label>
-      </div>
-
-      <div class="actions">
-        <button id="sendBtn" class="primary" disabled>Send</button>
-        <span id="sendFeedback" class="hint"></span>
-      </div>
-    </section>
-
-    <!-- Activity panel -->
-    <section class="card span-2">
-      <div class="card-header">
-        <h2>Activity
-          <span id="activeDeviceLabel" class="hint">(no device)</span>
-        </h2>
-        <div class="actions">
-          <label class="inline">
-            <input type="checkbox" id="showRx" checked /> RX
-          </label>
-          <label class="inline">
-            <input type="checkbox" id="showTx" checked /> TX
-          </label>
-          <button id="loadHistoryBtn">Reload history</button>
-          <button id="clearHistoryBtn" class="danger">Clear history</button>
+  <main class="workspace">
+    <!-- Console Area -->
+    <section class="console-area">
+      <div class="console-head">
+        <h2 class="section-title">Live Data Stream</h2>
+        <div class="console-head-actions">
+          <button id="loadHistoryBtn" class="btn-brutal btn-ghost">
+            <span class="material-symbols-outlined">refresh</span>
+            Reload
+          </button>
+          <button id="clearHistoryBtn" class="btn-brutal btn-ghost">
+            <span class="material-symbols-outlined">clear_all</span>
+            Clear
+          </button>
+          <button id="exportBtn" class="btn-brutal btn-accent">
+            <span class="material-symbols-outlined">download</span>
+            Export
+          </button>
         </div>
       </div>
 
-      <div id="activity" class="activity"></div>
+      <!-- Filter + view toggles -->
+      <div class="console-toolbar">
+        <input type="search" id="filterInput" class="brutal-input"
+               placeholder="FILTER ACTIVITY (TEXT OR HEX)…" />
+        <div class="console-toggles">
+          <label class="inline-toggle">
+            <input type="checkbox" id="showRx" checked /> RX
+          </label>
+          <label class="inline-toggle">
+            <input type="checkbox" id="showTx" checked /> TX
+          </label>
+          <label class="inline-toggle">
+            <input type="checkbox" id="autoScroll" checked /> AUTO-SCROLL
+          </label>
+        </div>
+      </div>
+
+      <!-- Log Output -->
+      <div class="console-frame">
+        <div class="console-scroll" id="activity" aria-live="polite">
+          <div class="empty">No traffic yet. Connect to a device to start streaming.</div>
+        </div>
+      </div>
+
+      <!-- Send Row -->
+      <div class="send-row">
+        <div class="send-input-wrap">
+          <span class="material-symbols-outlined send-prompt">keyboard_arrow_right</span>
+          <textarea id="sendInput" rows="1" class="brutal-input send-input"
+                    placeholder="TYPE A COMMAND…"
+                    spellcheck="false" autocomplete="off"></textarea>
+        </div>
+        <div class="send-controls">
+          <select id="newlineInput" class="brutal-select" aria-label="Append newline">
+            <option value="none">No line ending</option>
+            <option value="lf">Newline (NL)</option>
+            <option value="cr">Carriage return (CR)</option>
+            <option value="crlf" selected>Both NL &amp; CR</option>
+          </select>
+          <button id="sendBtn" class="btn-brutal btn-send" disabled>
+            <span class="send-label">Send</span>
+            <span class="material-symbols-outlined">send</span>
+          </button>
+        </div>
+        <div class="send-meta">
+          <span id="sendFeedback" class="send-feedback" role="status" aria-live="polite"></span>
+          <span class="send-hint">⌘/CTRL + ENTER TO SEND · ASCII/HEX</span>
+        </div>
+      </div>
     </section>
+
+    <!-- Right Sidebar (Configuration) -->
+    <aside class="sidebar" id="settingsSidebar">
+      <div class="sidebar-head">
+        <div>
+          <h3 class="sidebar-title">Configuration</h3>
+          <p class="sidebar-subtitle">Device Interface</p>
+        </div>
+        <button id="sidebarToggle" class="icon-btn-brutal" aria-label="Collapse sidebar">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="sidebar-body">
+        <!-- Status -->
+        <div class="config-block status-block">
+          <div class="config-row">
+            <span class="config-label">STATUS</span>
+            <span class="status-pill" id="statusPill" data-state="disconnected">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span id="statusText">DISCONNECTED</span>
+            </span>
+          </div>
+          <div class="config-row">
+            <span class="config-label">DEVICE</span>
+            <span class="config-value" id="activeDeviceLabel">—</span>
+          </div>
+        </div>
+
+        <!-- Port Selection -->
+        <div class="config-block">
+          <label class="config-label" for="portSelect">PORT</label>
+          <div class="port-row">
+            <select id="portSelect" class="brutal-select" aria-label="Serial device"></select>
+            <button id="refreshBtn" class="icon-btn-brutal" title="Refresh device list" aria-label="Refresh device list">
+              <span class="material-symbols-outlined">refresh</span>
+            </button>
+          </div>
+          <p class="config-meta" id="portMeta">0 devices detected.</p>
+        </div>
+
+        <!-- Baud Rate -->
+        <div class="config-block">
+          <label class="config-label" for="baudInput">BAUD RATE</label>
+          <select id="baudInput" class="brutal-select">
+            <option>300</option>
+            <option>1200</option>
+            <option>2400</option>
+            <option>4800</option>
+            <option selected>9600</option>
+            <option>19200</option>
+            <option>38400</option>
+            <option>57600</option>
+            <option>115200</option>
+            <option>230400</option>
+            <option>460800</option>
+            <option>921600</option>
+          </select>
+        </div>
+
+        <div class="config-grid">
+          <!-- Data Bits -->
+          <div class="config-block">
+            <label class="config-label" for="bytesizeInput">DATA BITS</label>
+            <select id="bytesizeInput" class="brutal-select">
+              <option value="8" selected>8</option>
+              <option value="7">7</option>
+              <option value="6">6</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+          <!-- Stop Bits -->
+          <div class="config-block">
+            <label class="config-label" for="stopbitsInput">STOP BITS</label>
+            <select id="stopbitsInput" class="brutal-select">
+              <option value="1" selected>1</option>
+              <option value="1.5">1.5</option>
+              <option value="2">2</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Parity -->
+        <div class="config-block">
+          <label class="config-label" for="parityInput">PARITY</label>
+          <select id="parityInput" class="brutal-select">
+            <option value="none" selected>None</option>
+            <option value="even">Even</option>
+            <option value="odd">Odd</option>
+            <option value="mark">Mark</option>
+            <option value="space">Space</option>
+          </select>
+        </div>
+
+        <!-- Encoding (for Send) -->
+        <div class="config-block">
+          <label class="config-label" for="encodingInput">ENCODING</label>
+          <select id="encodingInput" class="brutal-select">
+            <option value="ascii" selected>ASCII</option>
+            <option value="hex">Hex (0xAA 01 ...)</option>
+          </select>
+        </div>
+
+        <!-- Connect / Disconnect -->
+        <div class="config-block sidebar-actions">
+          <button id="disconnectBtn" class="btn-brutal btn-danger" disabled>
+            <span class="material-symbols-outlined">power_settings_new</span>
+            Disconnect
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="flashBtn" class="btn-brutal btn-inverse">
+          Flash Device
+        </button>
+      </div>
+    </aside>
+
+    <!-- Sidebar toggle (visible when collapsed) -->
+    <button id="sidebarToggleBtn" class="sidebar-toggle-btn hidden" aria-label="Open sidebar">
+      <span class="material-symbols-outlined">menu_open</span>
+    </button>
   </main>
+
+  <!-- Footer -->
+  <footer class="footnote">
+    <span>© 2026 serialPortUI · Localhost Only</span>
+    <div class="footnote-links">
+      <a href="#">Documentation</a>
+      <a href="#">API Reference</a>
+      <a href="#">Support</a>
+    </div>
+  </footer>
 
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
