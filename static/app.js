@@ -38,7 +38,6 @@ const state = {
 // ----------------------------------------------------------------------
 
 const THEME_KEY = "serialPortUI:theme";
-
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   document.documentElement.classList.toggle("dark", theme === "dark");
@@ -416,15 +415,19 @@ function exportHistory() {
 // Sidebar collapse
 // ----------------------------------------------------------------------
 
+const sideBarStatus = true;
+
 function setSidebar(collapsed) {
   const sidebar = $("settingsSidebar");
   const toggle = $("sidebarToggleBtn");
   if (collapsed) {
     sidebar.classList.add("is-collapsed");
     toggle.classList.remove("hidden");
+    sidebarToggleBtn = true;
   } else {
     sidebar.classList.remove("is-collapsed");
     toggle.classList.add("hidden");
+    sidebarToggleBtn = false;
   }
   try { localStorage.setItem(SIDEBAR_KEY, collapsed ? "1" : "0"); } catch (_) {}
 }
@@ -451,8 +454,12 @@ document.addEventListener("DOMContentLoaded", () => {
     try { localStorage.setItem(THEME_KEY, next); } catch (_) {}
   });
 
+
+   $("sidebarToggleBtn").addEventListener("click", () => {
+    $("settingsSidebar").classList.contains("is-collapsed") ? setSidebar(false) : setSidebar(true);
+  });
   $("sidebarToggle").addEventListener("click", () => setSidebar(true));
-  $("sidebarToggleBtn").addEventListener("click", () => setSidebar(false));
+  // $("sidebarToggleBtn").addEventListener("click", () => setSidebar(false));
 
   $("refreshBtn").addEventListener("click", refreshPorts);
   $("connectBtn").addEventListener("click", connect);

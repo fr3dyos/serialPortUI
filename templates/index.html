@@ -18,7 +18,7 @@
   <!-- Top App Bar -->
   <header class="topbar">
     <div class="brand">
-      <span class="material-symbols-outlined" id="iconBrand" >Terminal</span>
+      <span class="material-symbols-outlined" id="iconBrand" >Usb</span>
       <h1 class="brand-title">serialPortUI</h1>
       <nav class="topnav" aria-label="Primary">
         <a class="topnav-link is-active" href="#">Console</a>
@@ -30,9 +30,9 @@
         <span class="material-symbols-outlined theme-icon-light">dark_mode</span>
         <span class="material-symbols-outlined theme-icon-dark">light_mode</span>
       </button>
-      <button id="terminalBtn" class="icon-btn-brutal" title="Terminal" aria-label="Terminal">
-        <span class="material-symbols-outlined">terminal</span>
-      </button>
+      <button id="sidebarToggleBtn"  class="sidebar-toggle-btn-2" aria-label="Open sidebar">
+      <span class="material-symbols-outlined">menu_open</span>
+    </button>
       <button id="connectBtn" class="btn-brutal btn-connect" title="Connect to selected device">
         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">cable</span>
         <span id="connectBtnTxt" class="connect-label">Connect</span>
@@ -230,9 +230,7 @@
     </aside>
 
     <!-- Sidebar toggle (visible when collapsed) -->
-    <button id="sidebarToggleBtn" class="sidebar-toggle-btn hidden" aria-label="Open sidebar">
-      <span class="material-symbols-outlined">menu_open</span>
-    </button>
+    
   </main>
 
   <!-- Footer -->
